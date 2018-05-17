@@ -1162,6 +1162,7 @@ func (c *linuxContainer) Restore(process *Process, criuOpts *CriuOpts) error {
 			OrphanPtsMaster: proto.Bool(true),
 			AutoDedup:       proto.Bool(criuOpts.AutoDedup),
 			LazyPages:       proto.Bool(criuOpts.LazyPages),
+			TrackMem:        proto.Bool(criuOpts.TrackMem),
 		},
 	}
 
