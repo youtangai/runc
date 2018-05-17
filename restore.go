@@ -90,6 +90,10 @@ using the runc checkpoint command.`,
 			Name:  "lazy-pages",
 			Usage: "use userfaultfd to lazily restore memory pages",
 		},
+		cli.BoolFlag{
+			Name:  "track-mem",
+			Usage: "allow tracking memory restore proccess added by yota",
+		},
 	},
 	Action: func(context *cli.Context) error {
 		if err := checkArgs(context, 1, exactArgs); err != nil {
