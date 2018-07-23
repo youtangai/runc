@@ -177,18 +177,21 @@ func (fts *fileTransferService) TransferFile(stream pb.FileTransferService_Trans
 		if err != nil {
 			return err
 		}
-		log.Println(string(req.Data))
 		file.Write(req.Data)
 	}
 }
 
 func (fts *fileTransferService) RestoreContainer(ctx context.Context, info *pb.ContainerInfo) (*pb.Res, error) {
 	context := fts.context
+	fmt.Printf("context: %+v", context)
+	
 	spec, err := setupSpec(context)
 	if err != nil {
 		return &pb.Res{Message: "failed to load spec"}, err
 	}
+	log.Println("done setupspec")
 	options := criuOptions(context)
+	log.Println("done criuoptions")
 	status, err := startContainer(context, spec, CT_ACT_RESTORE, options)
 	if err != nil {
 		return &pb.Res{Message: "failed to restore container"}, err

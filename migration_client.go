@@ -13,8 +13,8 @@ import (
 	"log"
 	"google.golang.org/grpc"
 	"io/ioutil"
-	"io"
 	"os"
+	"io"
 )
 
 var migrationClientCommand = cli.Command{
@@ -115,22 +115,14 @@ checkpointed.`,
 				return err
 			}
 			f, err := os.Open(file.Name())
+			defer f.Close()
 			if err != nil {
 				return err
 			}
-			buff := make([]byte, MAX_BUFF)
-			for {
-				count, err := f.Read(buff)
-				if err == io.EOF {
-					break
-				}
-				if err != nil {
-					return err
-				}
-				err = ftsCli.runTransferFile(buff[:count])
-				if err != nil {
-					return err
-				}
+			
+			err = ftsCli.runTransferFile(f)
+			if err != nil {
+				return err
 			}
 		}
 		err = ftsCli.runRestoreContainer(context.Args().First())
@@ -172,29 +164,32 @@ func (fts *ftsClient)runGetFileInfo(name string, size int64, mode uint32) error 
 	}
 	res, err := fts.client.GetFileInfo(ctx, fileInfo)
 	if err != nil {
-		return err
-		
+		return err		
 	}
 	log.Printf("return message: %s\n", res.Message)
 	return nil
 }
 
-func (fts *ftsClient)runTransferFile(data []byte) error {
+func (fts *ftsClient)runTransferFile(file *os.File) error {
 	//log.Println(string(data))
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	stream, err := fts.client.TransferFile(ctx)
+	buff := make([]byte, MAX_BUFF)
 	for {
+		count, err := file.Read(buff)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
 		fileData := &pb.FileData {
-			Data: data,
-			
+			Data: buff[:count],
 		}
 		if err := stream.Send(fileData);  err != nil {
 			return err
-			
 		}
-		break
-		
 	}
 	res, err := stream.CloseAndRecv()
 	if err != nil {
@@ -210,9 +205,9 @@ func (fts *ftsClient)runRestoreContainer(containerId string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	res, err := fts.client.RestoreContainer(ctx, &pb.ContainerInfo{Name:containerId})
-	log.Println(res.Message)
 	if err != nil{
 		return err
 	}
+	log.Println(res.Message)
 	return nil
 } 
