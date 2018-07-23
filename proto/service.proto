@@ -1,9 +1,12 @@
 syntax="proto3";
 
+package proto;
+
 service FileTransferService {
   rpc getFolderInfo(FolderInfo) returns (Res) {}
   rpc getFileInfo(FileInfo) returns (Res) {}
   rpc transferFile(stream FileData) returns (Res) {}
+  rpc restoreContainer(ContainerInfo) returns (Res) {}
 }
 
 message FolderInfo {
@@ -17,6 +20,10 @@ message FileInfo {
 
 message FileData {
   bytes data = 1;
+}
+
+message ContainerInfo {
+  string name = 1;
 }
 
 message Res {

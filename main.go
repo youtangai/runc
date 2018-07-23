@@ -136,6 +136,8 @@ func main() {
 		startCommand,
 		stateCommand,
 		updateCommand,
+		migrationClientCommand,
+		migrationServerCommand,
 	}
 	app.Before = func(context *cli.Context) error {
 		if context.GlobalBool("debug") {
