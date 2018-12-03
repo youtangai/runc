@@ -91,6 +91,10 @@ using the runc checkpoint command.`,
 			Name:  "lazy-pages",
 			Usage: "use userfaultfd to lazily restore memory pages",
 		},
+		cli.BoolFlag{
+			Name:  "track-mem",
+			Usage: "use this option when tracking memory chenge",
+		},
 	},
 	Action: func(context *cli.Context) error {
 		if err := checkArgs(context, 1, exactArgs); err != nil {
@@ -138,5 +142,6 @@ func criuOptions(context *cli.Context) *libcontainer.CriuOpts {
 		AutoDedup:               context.Bool("auto-dedup"),
 		LazyPages:               context.Bool("lazy-pages"),
 		StatusFd:                context.String("status-fd"),
+		TrackMem:                context.Bool("track-mem"),
 	}
 }
