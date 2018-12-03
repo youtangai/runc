@@ -986,6 +986,10 @@ func (c *linuxContainer) Checkpoint(criuOpts *CriuOpts) error {
 		rpcOpts.TrackMem = proto.Bool(true)
 	}
 
+	if criuOpts.TrackMem {
+		rpcOpts.TrackMem = proto.Bool(true)
+	}
+
 	// append optional manage cgroups mode
 	if criuOpts.ManageCgroupsMode != 0 {
 		// criu 1.7 => 10700
@@ -1187,6 +1191,7 @@ func (c *linuxContainer) Restore(process *Process, criuOpts *CriuOpts) error {
 			OrphanPtsMaster: proto.Bool(true),
 			AutoDedup:       proto.Bool(criuOpts.AutoDedup),
 			LazyPages:       proto.Bool(criuOpts.LazyPages),
+			TrackMem:        proto.Bool(criuOpts.TrackMem),
 		},
 	}
 
